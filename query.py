@@ -79,22 +79,55 @@ for account in all_accounts:
 #       Human_first_name Human_last_name
 #           Animal name (animal species)
 
+
 def print_directory():
-    """"""
-    pass
+    """ Print out each human (once) with a list of their animals. """
+
+    # get list of all human objects
+    humans = Human.query.all()
+
+    for human in humans:
+        print "{} {}".format(human.fname, human.lname)
+        for animal in human.animals:
+            print "\t {} ({})".format(animal.name, animal.animal_species)
 
 # 2. Write a function, get_animals_by_name, which takes in a string representing
 #    an animal name (or part of an animal name) and *returns a list* of animals
 #    whose names contain that string.
 
+
 def get_animals_by_name(name):
-    """"""
-    pass
+    """ Return a list of animals whose names contain user input(animal name). """
+
+    # get list of animal OBJECTS containing user input as part of name
+    name = "%" + name + "%"
+    animals = Animal.query.filter(Animal.name.like(name)).all()
+
+    # unpack animals to get individual names; store in list
+    animal_list = []
+
+    for animal in animals:
+        animal_list.append(animal.name)
+
+    return animal_list
 
 # 3. Write a function, find_humans_by_animal_species, which takes in an animal
 #    species and *returns a list* of all of the humans who have animals of
 #    that species.
 
+
 def find_humans_by_animal_species(species):
-    """"""
-    pass
+    """ Return list of all animals who have animals of user input(species). """
+
+    # get list of animal OBJECTS with species specified by user input
+    animals = Animal.query.filter(Animal.animal_species == species).all()
+
+    # unpack animals to get owner names; put in list
+    human_list = []
+
+    for animal in animals:
+            human_list.append(animal.human.fname)
+
+    # rid of duplicates in list by converting to set, then convert back to list
+    human_list = list(set(human_list))
+    return human_list
