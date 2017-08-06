@@ -7,8 +7,7 @@ Explain what is returned and why when we type the following:
 Brand.query.filter_by(name='Ford')
 ----------------------------------------------
 
-ANSWER:
-
+ANSWER: A BaseQuery object is returned rather than a list of Brand objects that matches that criteria. The reason is, without .all()/.first()/.one() , you are simply typing a question rather than the answer to that question.
 
 
 -------------
@@ -17,8 +16,7 @@ QUESTION TWO:
 In your own words, describe what a middle table is and what type of relationship (many to one, many to many, one to one, etc.) it manages.
 ----------------------------------------------
 
-ANSWER:
-
+ANSWER: A middle table is the table that connects two tables that have a many-to-many relationship (or more accurately, two one-to-many relationships). That table signifies unique events that connect the two tables together. For instance, in the user/ratings/movie data model we used for the ratings exercise, when we want to access information about a particular event (e.g. get the rating of a specific user rating a specific movie), we need a middle table to get that information. A middle table can have additional information about that event while an association table usually only includes foreign keys and a primary key.
 
 
 ---------------
@@ -51,3 +49,17 @@ You can also list any questions you would still want to ask to clarify the data 
 ----------------------------------------------
 
 ANSWER:
+
+- Queries that we’ll probably make:
+	- When is b/l/d served?
+	- What is a dish’s name + desc?
+	- Give me a list of all dishes from b/l/d and its corresponding price
+	- Which menus does this dish appear?
+
+- Assumptions:
+	- 1 dish can appear in many menus
+	- Many dishes can appear in 1 menu (aka dish-menu is MANY-TO-MANY aka need MIDDLE table)
+	- Dish price changes depending on menu location (menu - price - dish interaction… price is middle table)
+	- 3 menus though, so 3 middle tables
+
+
