@@ -50,16 +50,56 @@ You can also list any questions you would still want to ask to clarify the data 
 
 ANSWER:
 
+—- PLANNING STAGE ——
+
 - Queries that we’ll probably make:
 	- When is b/l/d served?
-	- What is a dish’s name + desc?
+	- What is a particular dish’s description?
 	- Give me a list of all dishes from b/l/d and its corresponding price
-	- Which menus does this dish appear?
+	- Which menus does this dish appear in?
 
 - Assumptions:
 	- 1 dish can appear in many menus
 	- Many dishes can appear in 1 menu (aka dish-menu is MANY-TO-MANY aka need MIDDLE table)
 	- Dish price changes depending on menu location (menu - price - dish interaction… price is middle table)
-	- 3 menus though, so 3 middle tables
 
 
+——— TABLES ———
+
+Menus
+____
+menu_id* (primary key, string of either “breakfast”, “lunch”, or “dinner”))
+time (integer, nullable = False)
+
+Dishes
+____
+dish_id* (primary key, auto-incrementing integers)
+name (integer, nullable = False)
+type (foreign key to Menus’ menu_id)
+description (string, nullable = True)
+
+Prices
+————
+price_id* (primary key, auto-incrementing integers)
+menu_id (foreign key to Menus’ menu_id)
+dish_id (foreign key to Dishes’ dish_id)
+price (integer, nullable = False)
+
+
+——— RATIONALE FOR MODEL STRUCTURE ———
+- Originally thought to do 3 separate menu tables (breakfast table, lunch table, dinner table) with 3 different middle Price tables that connected them to dishes. However, decided to combine menus into 1 table. If I stuck out with the first plan, in the Dishes table, the foreign key (type) would be a foreign key to 3 tables, which sounds confusing. *** NOT 100% SURE THAT MY INITIAL PLAN IS WRONG DUE TO FLEXIBILITY OF MANY TABLES IF I ORGANIZED IT THAT WAY ***
+- Made the menu_ids the actual name of the menu since it’s already unique (e.g. there will never 2 breakfasts). Additionally, Dishes table types will be more explicit (e.g. dish’s type is breakfast vs. random menu_id number).
+- However, kept the auto-incrementing dish_id vs. making the name of the dish the primary key since dish names can duplicate in Dishes table if it’s located in 2+ menus
+- Made time an integer vs. string since queries will probably be ‘give me all dishes from 11am-1pm’, which means boolean expressions using INT 11 and 13(aka 1 pm). Probably setting integers using military time so user can do calculations (e.g. 2 hours between 11am-1pm since 13 - 11 = 2).
+- Prices is a middle table since it has the actual price as unique info + potential to add additional info about that particular menu-dish object.
+- Made Price table’s price column an integer for potential calculations
+- Was given an Early Bird item situation in the instructions, but not the actual calculations. Right now, just assuming that price of a breakfast item is less than the price of that same item but on the lunch menu. Could do a some unit test here to make sure breakfast item prices will ALWAYS be cheaper than the same item on a lunch menu.
+
+——- SAMPLE QUERIES —— 
+*** to check if model structure makes sense when i try accessing certain data in SQLAlchemy
+
+- When is breakfast served? Menu.query.get(breakfast).first() —> returns 1 breakfast object w/ id(breakfast) and time(8-11:30). Then unpack that object to get time.
+- What is a particular dish’s description? Dish.query.filter(Dish.name == ‘dish name’).first() —> returns 1 dish object w/ dish_id, name, type, and desc. Unpack.
+- List of all dishes from breakfast? Dish.query.filter(Dish.type == ‘breakfast’).all() —> returns list of dish breakfast objects. Unpack.
+- Price of a particular breakfast dish? Price.query.filter(Price.menu_id == ‘breakfast’, Price.dish_id == ‘dish_id’).first() —> returns 1 price object that has price.
+- Which menus does this dish appear in? Dish.query.filter(Dish.name == ‘dish name’).all() —> returns list of dish object(s) with same name. unpack to get those object’s types.
