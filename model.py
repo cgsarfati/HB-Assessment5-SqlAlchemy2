@@ -17,12 +17,39 @@ class Human(db.Model):
 
     __tablename__ = "humans"
 
+    human_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    fname = db.Column(db.String(64), nullable=False)
+    lname = db.Column(db.String(64), nullable=False)
+    email = db.Column(db.String(100), nullable=True)
+
+    def __repr__(self):
+        """ Provide helpful representation when printed. """
+
+        return "<Human human_id={} fname={} lname={} email={}>".format(
+            self.human_id, self.fname, self.lname, self.email)
+
 
 class Animal(db.Model):
     """Animal model."""
 
     __tablename__ = "animals"
 
+    animal_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    human_id = db.Column(db.Integer, db.ForeignKey('humans.human_id'))
+    name = db.Column(db.String(64), nullable=False)
+    animal_species = db.Column(db.String(64), nullable=False)
+    birth_year = db.Column(db.String(64), nullable=True)
+
+    def __repr__(self):
+        """ Provide helpful representation when printed. """
+
+        return """<Animal animal_id={} human_id={} name={} animal_species={}
+        birth_year={}>""".format(self.animal_id, self.human_id,
+                                 self.name, self.animal_species, self.birth_year)
+
+    # define relationship to human via human_id
+    human = db.relationship("Human", backref=db.backref("animals",
+                                                        order_by=human_id))
 
 # End Part 1
 

@@ -20,29 +20,45 @@ init_app()
 # -----------------
 
 # Get the human with the id 2.
-q1 = None
+q1 = Human.query.get(2)
 
 # Get the *first* animal with the species 'fish'
-
-q2 = None
+q2 = Animal.query.filter(Animal.animal_species == 'fish').first()
 
 # Get all of the animals for the human with the id 5 and the animal species 'dog'
-q3 = None
+q3 = Animal.query.filter((Animal.human_id == 5) & (Animal.animal_species == 'dog')).all()
+#alternatives:
+    #Animal.query.filter(Animal.human_id == 5, Animal.animal_species == 'dog').all()
+    #db.session.query(Animal).filter(Animal.human_id == 5, Animal.animal_species == 'dog').all()
+    #Animal.query.filter_by(human_id=5, animal_species='dog').all()
 
 # Get all the animals that were born after 2015 (do not include animals without birth years).
-q4 = None
+q4 = Animal.query.filter(Animal.birth_year > 2015).all()
 
 # Find the humans with first names that start with 'J'
-q5 = None
+q5 = Human.query.filter(Human.fname.like('J%')).all()
 
 # Find all the animals without birth years in the database.
-q6 = None
+q6 = Animal.query.filter(Animal.birth_year.is_(None)).all()
 
 # Find all animals that are either fish or rabbits
-q7 = None
+q7 = Animal.query.filter((Animal.animal_species == 'fish') | (Animal.animal_species == 'rabbit')).all()
 
 # Find all the humans whose email addresses do not contain 'gmail'
-q8 = None
+
+# Get list of everyone
+all_accounts = Human.query.all()
+
+# Get list of only those with gmail accounts
+gmail = '%' + 'gmail' + '%'  # reformat so %_ can be used w/out format highlight
+only_gmail_accounts = Human.query.filter(Human.email.like(gmail)).all()
+
+# Create empty list to append non-gmail accounts from all accounts
+q8 = []
+
+for account in all_accounts:
+    if account not in only_gmail_accounts:
+        q8.append(account)
 
 # ---------------------
 # PART THREE: FUNCTIONS
